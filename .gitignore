@@ -1,0 +1,17 @@
+env
+.env
+
+*.secret
+
+node_modules
+
+dist
+
+*.zip
+
+__pycache__
+.pytest_cache
+*.dist-info
+
+ws/*
+utilities/*
