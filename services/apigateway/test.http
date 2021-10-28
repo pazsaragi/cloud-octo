@@ -1,0 +1,11 @@
+GET http://localhost:3000/health HTTP/1.1
+
+###
+
+POST http://localhost:3000/login HTTP/1.1
+content-type: application/json
+
+{
+    "email": "test@test.com",
+    "password": "test1234%"
+}
