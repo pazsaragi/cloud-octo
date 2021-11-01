@@ -5,6 +5,7 @@ import { IS_DEV, IS_TEST } from "../../../constants";
 interface Props {
   tableName: string;
   environment: string;
+  stream?: boolean;
 }
 
 export class DynamoStack extends cdk.Construct {
@@ -22,6 +23,7 @@ export class DynamoStack extends cdk.Construct {
       tableName: props.tableName,
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       sortKey: { name: "sk", type: dynamodb.AttributeType.STRING },
+      stream: props.stream ? dynamodb.StreamViewType.NEW_AND_OLD_IMAGES : undefined
     });
 
     cdk.Tags.of(this.dbTable).add("environment", props.environment);

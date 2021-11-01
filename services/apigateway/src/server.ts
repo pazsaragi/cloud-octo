@@ -3,6 +3,7 @@ import { fastifyExpress } from "fastify-express";
 import { JwtPayload } from "jsonwebtoken";
 import { ifElse, pipe, unless } from "ramda";
 import { RBACMap } from "./rbac";
+import { businessRoutes } from "./routes/business-routes";
 import { verifyToken } from "./services";
 import {
   getBodyFromRequest,
@@ -163,15 +164,11 @@ export function build() {
       }
       roleHasAccess();
 
-      done();
+      // done();
+      return
     });
 
-    protectedRoutes.get("/protected", async (request, reply) => {
-      return "protected";
-    });
-    protectedRoutes.get("/lunch", async (request, reply) => {
-      return "protected";
-    });
+    businessRoutes(server)
   });
 
   return server;

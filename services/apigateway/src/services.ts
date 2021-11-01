@@ -1,9 +1,10 @@
-import { db } from "./db";
+import { businessQueueUrl, db, queue } from "./aws";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { isEmpty, isNil, not, or, pipe, pipeP, tryCatch, when } from "ramda";
 import { ifErrorFoundThrowError, returnErrorDataObject } from "./utils";
 import { ICreateUser, IDeleteUser, IUser } from "./interfaces";
+import { ENV } from "./constants";
 
 export const findUserByEmailQuery = async (email: string): Promise<IUser> => {
   return await db
@@ -118,5 +119,30 @@ export const storeRefreshToken = async (
       TableName: process.env.DB_TABLE_NAME || "token-table",
     })
     .promise()
-    .then((data) => data);
+    .then((data: any) => data);
 };
+
+
+export const createBusiness = async (messageBody: any) => {
+  const queueUrl = await businessQueueUrl
+  
+  ifErrorFoundThrowError(queueUrl)
+
+  return queue.sendMessage(
+    {
+      MessageBody: JSON.stringify({
+        ...messageBody,
+        "event_type": "create"
+      }), /* required */
+      QueueUrl: queueUrl || `https://sqs.eu-west-2.amazonaws.com/${process.env.AWS_ACCOUNT_ID}/${process.env.ENV}-business`, /* required */
+    }
+  )
+  .promise()
+  .then(r => r.$response.data)
+  .catch(e => returnErrorDataObject("Failed to create business")(e))
+}
+
+export const sendMessage = (messageBody: any, queueUrl: string) => queue.sendMessage({ 
+  MessageBody: messageBody,
+  QueueUrl: queueUrl
+}) 

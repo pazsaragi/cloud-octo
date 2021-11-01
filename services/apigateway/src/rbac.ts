@@ -3,7 +3,7 @@ export const RBACMap = [
     name: "admin",
     allowed: [
       {
-        route: "/protected",
+        route: "/business",
         methods: ["GET", "POST", "PUT"],
       },
     ],

@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "octo_aws_common"
+version = "0.1.4"
+description = ""
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+boto3 = "^1.19.7"
+aws-lambda-powertools = "^1.21.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
