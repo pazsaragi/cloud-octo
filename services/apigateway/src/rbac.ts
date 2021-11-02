@@ -6,6 +6,10 @@ export const RBACMap = [
         route: "/business",
         methods: ["GET", "POST", "PUT"],
       },
+      {
+        route: "/business/*",
+        methods: ["GET", "POST", "PUT"],
+      },
     ],
   },
 ];

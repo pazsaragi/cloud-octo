@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"path": "lambda"
+		},
+		{
+			"path": "octo_aws_common"
+		},
+		{
+			"path": "."
+		},
+		{
+			"uri": "vscode-remote://wsl+ubuntu-20.04/home/paz/projects/cloud-octo/ui/web"
+		},
+		{
+			"uri": "vscode-remote://wsl+ubuntu-20.04/home/paz/projects/cloud-octo/services/apigateway"
+		},
+		{
+			"uri": "vscode-remote://wsl+ubuntu-20.04/home/paz/projects/cloud-octo/infrastructure"
+		}
+	],
+	"remoteAuthority": "wsl+Ubuntu-20.04",
+	"settings": {}
+}

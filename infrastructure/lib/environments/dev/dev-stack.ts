@@ -7,6 +7,7 @@ import { DynamoStack } from "../shared/dynamo-stack";
 import * as lambda from "@aws-cdk/aws-lambda";
 import * as sqs from "@aws-cdk/aws-sqs";
 import { SqsEventSource } from "@aws-cdk/aws-lambda-event-sources";
+import { WebAppStack } from "../shared/web-stack";
 
 interface Props {}
 
@@ -44,6 +45,17 @@ export class DevStack extends cdk.Construct {
       }
     );
 
+    const apigCert = new CertificateStack(
+      this,
+      `${environment}-${this.domainName}-cert-stack`,
+      {
+        domainName: "api." + this.domainName,
+        environment,
+        zone: rootHostedZone.zone,
+        region: "eu-west-2",
+      }
+    );
+
     // Stores our users
     const authDb = new DynamoStack(this, defaultId + "-authDb", {
       environment,
@@ -63,20 +75,22 @@ export class DevStack extends cdk.Construct {
       stream: true,
     });
 
-    // const apigateway = new FargateBackendStack(
-    //   this,
-    //   defaultId + "-fg-be-stack",
-    //   {
-    //     environment,
-    //     serviceName: "backend",
-    //     vpc: rootVPC.vpc,
-    //     certificate: rootCertificate.certificate,
-    //     zone: rootHostedZone.zone,
-    //     domainName: "api." + this.domainName
-    //   }
-    // );
+    const apigateway = new FargateBackendStack(
+      this,
+      defaultId + "-fg-be-stack",
+      {
+        environment,
+        serviceName: "backend",
+        vpc: rootVPC.vpc,
+        certificate: apigCert.certificate,
+        zone: rootHostedZone.zone,
+        domainName: "api." + this.domainName,
+      }
+    );
 
-    // authDb.dbTable.grantReadWriteData(apigateway.service.taskDefinition.taskRole);
+    authDb.dbTable.grantReadWriteData(
+      apigateway.service.taskDefinition.taskRole
+    );
 
     const rootDlq = new sqs.Queue(this, defaultId + "-rootDlq", {
       queueName: defaultId + "-root-dlq",
@@ -137,6 +151,14 @@ export class DevStack extends cdk.Construct {
     businessDb.dbTable.grantReadWriteData(businessLambda);
     businessQueue.grantConsumeMessages(businessLambda);
     businessLambda.addEventSource(new SqsEventSource(businessQueue));
+
+    const webStack = new WebAppStack(this, defaultId + "-webapp", {
+      domainName: this.domainName,
+      environment,
+      siteCertificateArn: rootCertificate.certificate.certificateArn,
+      zone: rootHostedZone.zone,
+    });
+
     // const lambdaFunction = new lambda.Function(this, 'LambdaFunction', {
     //   functionName: defaultId+`-businessCommandStream`,
     //   handler: 'index.handler',

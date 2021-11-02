@@ -7,6 +7,7 @@ interface Props {
   environment: string;
   domainName: string;
   subDomain?: string;
+  region?: string;
 }
 
 /**
@@ -16,7 +17,7 @@ export class CertificateStack extends cdk.Construct {
   certificate: acm.ICertificate;
   constructor(scope: cdk.Construct, id: string, props: Props) {
     super(scope, id);
-    
+
     const domainName = props?.subDomain
       ? `${props.subDomain}.${props.domainName}`
       : props.domainName;
@@ -29,6 +30,9 @@ export class CertificateStack extends cdk.Construct {
       {
         domainName,
         hostedZone: props.zone,
+        region: props.region || "us-east-1",
+        //This is needed especially for certificates used for CloudFront distributions,
+        //which require the region to be us-east-1.
       }
     );
   }

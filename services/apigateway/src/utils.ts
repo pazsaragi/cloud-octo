@@ -20,6 +20,20 @@ export const getBodyFromRequest = (
   return request.body;
 };
 
+export const getParamsFromRequest = (
+  request: FastifyRequest<RouteGenericInterface, Server, IncomingMessage>
+): any => {
+  return request.params;
+};
+
+export const matchRuleShort = (str: string, rule: string) => {
+  var escapeRegex = (str: string) =>
+    str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+  return new RegExp(
+    "^" + rule.split("*").map(escapeRegex).join(".*") + "$"
+  ).test(str);
+};
+
 export const hasError = propEq("error", true);
 
 export const anyResponseReturnedError = any(hasError);

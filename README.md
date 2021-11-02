@@ -17,7 +17,7 @@
 
 ---
 
-* Admin UI
+* Web UI
     - administrators create menus 
     - admins can take orders and complete them
 

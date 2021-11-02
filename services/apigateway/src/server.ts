@@ -9,9 +9,11 @@ import {
   getBodyFromRequest,
   ifErrorFoundThrowError,
   isNotEmptyOrNil,
+  matchRuleShort,
   notSuccessfulResponse,
 } from "./utils";
 import { loginWorkflow, registerWorkflow } from "./workflow";
+import fastifyCors from "fastify-cors";
 
 const PORT = process.env.PORT || 80;
 
@@ -21,6 +23,11 @@ export function build() {
       level: process.env.ENV === "DEV" ? "debug" : "info",
       prettyPrint: true,
     },
+  });
+
+  server.register(fastifyCors, {
+    origin: "*",
+    methods: ["GET", "PUT", "POST"],
   });
 
   server.register(fastifyExpress);
@@ -151,7 +158,8 @@ export function build() {
               r.allowed.filter(
                 (a) =>
                   a.methods.includes(request.routerMethod) &&
-                  a.route === request.routerPath
+                  (a.route === request.routerPath ||
+                    matchRuleShort(request.routerPath, a.route))
               )
             );
             return isValid.length > 0;
@@ -165,10 +173,10 @@ export function build() {
       roleHasAccess();
 
       // done();
-      return
+      return;
     });
 
-    businessRoutes(server)
+    businessRoutes(server);
   });
 
   return server;
